@@ -35,6 +35,8 @@ namespace WebApplicationHttpHeaders
                             Duration = 30
                         })
             );
+
+            services.AddMemoryCache();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,6 +55,29 @@ namespace WebApplicationHttpHeaders
             app.UseResponseCaching();
 
             app.UseAuthorization();
+            //Security headers make me happy
+            app.UseHsts(hsts => hsts.MaxAge(365).IncludeSubdomains());
+            app.UseXContentTypeOptions();
+            app.UseReferrerPolicy(opts => opts.NoReferrer());
+            app.UseXXssProtection(options => options.EnabledWithBlockMode());
+            app.UseXfo(options => options.Deny());
+            app.UseCsp(opts => opts
+                .BlockAllMixedContent()
+                .StyleSources(s => s.Self())
+                .StyleSources(s => s.UnsafeInline())
+                .FontSources(s => s.Self())
+                .FormActions(s => s.Self())
+                .FrameAncestors(s => s.Self())
+                .ImageSources(s => s.Self())
+                .ScriptSources(s => s.Self())
+            );
+            //End Security Headers
+
+            app.Use(async (context, next) =>  {
+               context.Response.Headers.Add("Feature-Policy", "vibrate 'self'; usermedia *; sync-xhr 'self' https://example.com");
+                await next();
+            });
+
 
             app.UseEndpoints(endpoints =>
             {
