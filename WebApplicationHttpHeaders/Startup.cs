@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,7 +28,14 @@ namespace WebApplicationHttpHeaders
         {
             // serwis odpowiedzialny za konfiguracje Output Caching
             services.AddResponseCaching();
-            
+
+            services.AddResponseCompression(options =>
+            {
+                options.EnableForHttps = true;
+                //options.MimeTypes = MimeTypes;
+                options.Providers.Add<GzipCompressionProvider>();
+            });
+
             services.AddControllers(options =>
                 options.CacheProfiles.Add("Default30",
                         new CacheProfile()
@@ -53,6 +61,8 @@ namespace WebApplicationHttpHeaders
 
             // konfiguracja middleware
             app.UseResponseCaching();
+
+            app.UseResponseCompression();
 
             app.UseAuthorization();
             //Security headers make me happy
