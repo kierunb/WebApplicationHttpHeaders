@@ -55,7 +55,7 @@ namespace WebApplicationHttpHeaders
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
@@ -66,7 +66,7 @@ namespace WebApplicationHttpHeaders
 
             app.UseAuthorization();
             //Security headers make me happy
-            app.UseHsts(hsts => hsts.MaxAge(365).IncludeSubdomains());
+            //app.UseHsts(hsts => hsts.MaxAge(365).IncludeSubdomains());
             app.UseXContentTypeOptions();
             app.UseReferrerPolicy(opts => opts.NoReferrer());
             app.UseXXssProtection(options => options.EnabledWithBlockMode());
